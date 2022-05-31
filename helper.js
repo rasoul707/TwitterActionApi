@@ -25,14 +25,14 @@ const chromeOptions = {
 };
 
 const blockedResourceTypes = [
-    // 'image',
-    // 'media',
-    // 'font',
+    'image',
+    'media',
+    'font',
     'texttrack',
     'object',
     'beacon',
     'csp_report',
-    // 'imageset',
+    'imageset',
 ];
 
 const skippedResources = [
@@ -45,7 +45,7 @@ const skippedResources = [
     'cdn.api.twitter',
     'google-analytics',
     'googletagmanager',
-    // 'google',
+    'google',
     'fontawesome',
     'facebook',
     'analytics',
@@ -195,18 +195,25 @@ const doTask = async (page, task, tags) => {
             // retweet
             if (task[3]) {
                 actions.push('retweet')
-                await page.click('[aria-label="Retweet"]').catch((e) => { fail.push('retweet') });
-                await page.keyboard.press('ArrowDown');
-                await page.keyboard.press('ArrowDown');
-                await page.keyboard.press('Enter');
+                const ret = await page.click('[aria-label="Retweet"]').catch((e) => { return 'error'; });
+                if (ret === 'error') {
+                    fail.push('retweet');
+                } else {
+                    await page.keyboard.press('ArrowDown');
+                    await page.keyboard.press('ArrowDown');
+                    await page.keyboard.press('Enter');
+                }
             }
             // tag
             if (task[4]) {
                 const text = chooseRandomTag(tags, task[5]) + " ";
                 actions.push('tag')
                 actions.push(task[5])
-                const rep = await page.click('[aria-label="Reply"]').catch((e) => { fail.push('tag'); return 'error' });
-                if (rep !== 'error') {
+                const rep = await page.click('[aria-label="Reply"]').catch((e) => { return 'error'; });
+
+                if (rep === 'error') {
+                    fail.push('tag');
+                } else {
                     const nav = await page.waitForSelector('[role="dialog"] [aria-label="Tweet text"]', { visible: true, timeout: 10000 }).catch((e) => { return 'error'; });
                     if (nav === 'error') {
                         fail.push('tag')

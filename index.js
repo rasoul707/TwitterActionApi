@@ -69,6 +69,8 @@ app.post('/run', async (req, res) => {
         await browser.close();
     }
 
+    // return res.json(result)
+
 
     fs.writeFileSync("reports/" + trpID + ".json", JSON.stringify(result));
     console.log("#" + trpID, ": Finished")
