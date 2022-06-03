@@ -109,18 +109,24 @@ const login = async (page, account) => {
     const twitterLoginPageUrl = 'https://twitter.com/i/flow/login';
     let step = '';
 
+    const id = account[0];
+    const username = account[1];
+    const password = account[2];
+    const email = account[3];
+
+
     return new Promise(async (resolve, reject) => {
 
         try {
             await page.goto(twitterLoginPageUrl, { timeout: 25000, waitUntil: 'domcontentloaded' }).catch((e) => { throw "load_failed" });
 
             await page.waitForSelector('input[name="text"]', { visible: true, timeout: 10000 }).catch((e) => { throw "username_failed" });
-            await page.type('input[name="text"]', account[0]);
+            await page.type('input[name="text"]', username);
 
             await page.keyboard.press('Enter');
 
             await page.waitForSelector('input[name="password"]', { visible: true, timeout: 10000 }).catch((e) => { throw "password_failed" });
-            await page.type('input[name="password"]', account[1]);
+            await page.type('input[name="password"]', password);
 
             await page.keyboard.press('Enter');
 
@@ -132,7 +138,7 @@ const login = async (page, account) => {
                     throw "password_incorrect"
                 }
                 else {
-                    await page.type('input[name="text"][type="email"]', account[2]);
+                    await page.type('input[name="text"][type="email"]', email);
                     await page.keyboard.press('Enter');
                     const nav2 = await page.waitForNavigation({ timeout: 10000, waitUntil: 'domcontentloaded' }).catch((e) => { return 'error' });
                     if (nav2 === 'error' && page.url() === twitterLoginPageUrl) {
@@ -174,30 +180,38 @@ const chooseRandomTag = (list, count) => {
 
 const doTask = async (page, task, tags) => {
 
+    const id = task[0];
+    const url = task[1];
+    const follow = task[2];
+    const like = task[3];
+    const retweet = task[4];
+    const tag = task[5];
+    const tagCount = task[6];
+
     return new Promise(async (resolve, reject) => {
-        let fail = [];
+        let fails = [];
         let actions = [];
         try {
-            const task_username = task[0].split("/")[3]
-            await page.goto(task[0], { timeout: 25000, waitUntil: 'domcontentloaded' }).catch((e) => { throw "load_failed" });
+            const task_username = url.split("/")[3]
+            await page.goto(url, { timeout: 25000, waitUntil: 'domcontentloaded' }).catch((e) => { throw "load_failed" });
             await page.waitForSelector('article', { visible: true, timeout: 10000 }).catch((e) => { throw "tweet_failed" });
 
             // follow
-            if (task[1]) {
+            if (follow) {
                 actions.push('follow')
-                await page.click('[aria-label="Follow @' + task_username + '"]').catch((e) => { fail.push('follow') });
+                await page.click('[aria-label="Follow @' + task_username + '"]').catch((e) => { fails.push('follow') });
             }
             // like
-            if (task[2]) {
+            if (like) {
                 actions.push('like')
-                await page.click('[aria-label="Like"]').catch((e) => { fail.push('like') });
+                await page.click('[aria-label="Like"]').catch((e) => { fails.push('like') });
             }
             // retweet
-            if (task[3]) {
+            if (retweet) {
                 actions.push('retweet')
                 const ret = await page.click('[aria-label="Retweet"]').catch((e) => { return 'error'; });
                 if (ret === 'error') {
-                    fail.push('retweet');
+                    fails.push('retweet');
                 } else {
                     await page.keyboard.press('ArrowDown');
                     await page.keyboard.press('ArrowDown');
@@ -205,17 +219,17 @@ const doTask = async (page, task, tags) => {
                 }
             }
             // tag
-            if (task[4]) {
-                const text = chooseRandomTag(tags, task[5]) + " ";
+            if (tag) {
+                const text = chooseRandomTag(tags, tagCount) + " ";
                 actions.push('tag')
                 const rep = await page.click('[aria-label="Reply"]').catch((e) => { return 'error'; });
 
                 if (rep === 'error') {
-                    fail.push('tag');
+                    fails.push('tag');
                 } else {
                     const nav = await page.waitForSelector('[role="dialog"] [aria-label="Tweet text"]', { visible: true, timeout: 10000 }).catch((e) => { return 'error'; });
                     if (nav === 'error') {
-                        fail.push('tag')
+                        fails.push('tag')
                     } else {
                         await page.keyboard.type(text, { delay: 100 });
                         await page.waitForTimeout(500);
@@ -224,7 +238,7 @@ const doTask = async (page, task, tags) => {
                     }
                 }
             }
-            resolve({ actions, fail })
+            resolve({ actions, fails })
         }
         catch (error) {
             reject(error);

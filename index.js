@@ -26,8 +26,53 @@ app.post('/run', async (req, res) => {
 
     res.status(200).json({ ok: true, trpID });
 
+    /*
 
-    let result = [];
+    data = {
+        accounts: [
+            [id, username, password, email],
+        ],
+        tasks: [
+            [
+                id,
+                url,
+                .
+                .
+                .
+
+            ],
+        ],
+        tags: [...]
+    }
+
+
+
+    result = {
+        accounts: [
+            {
+                ok: ok,
+                id: id,
+                step: ,
+                error,
+            }
+        ],
+        accountTasks: [
+            {
+                ok: true,
+                taskID: taskID,
+                accountID: accountID,
+                actions,
+                fails,
+            }
+        ]
+
+    }
+
+
+    */
+
+
+    let result = { accounts: [], accountTasks: [] };
 
     // accounts
     for (let a = 0; a < data.accounts.length; a++) {
@@ -37,33 +82,34 @@ app.post('/run', async (req, res) => {
         const browser = await lunchBrowser();
         const _page = await newPage(browser, useragent);
 
-        result.push({ account: account[a] });
+        result.accounts.push({ id: account[0] });
+
         try {
             // login
             const stepLogin = await login(_page, account);
-            result[a].ok = true;
-            result[a].step = stepLogin;
-            result[a].todo = [];
+            result.accounts[a].ok = true;
+            result.accounts[a].step = stepLogin;
 
             // tasks
             for (let t = 0; t < data.tasks.length; t++) {
-                result[a].todo.push({});
+                const task = data.tasks[t];
+
+                result.accountTasks.push({ accountID: account[0], taskID: task[0] })
                 try {
                     // do task
-                    const task = data.tasks[t];
                     const _result = await doTask(_page, task, data.tags);
-                    result[a].todo[t].ok = true;
-                    result[a].todo[t].actions = _result.actions;
-                    result[a].todo[t].fails = _result.fail;
+                    result.accountTasks[result.accountTasks.length - 1].ok = true;
+                    result.accountTasks[result.accountTasks.length - 1].actions = _result.actions.join(",");
+                    result.accountTasks[result.accountTasks.length - 1].fails = _result.fails.join(",");
                 } catch (err) {
-                    result[a].todo[t].ok = false;
+                    result.accountTasks[result.accountTasks.length - 1].ok = false;
                 }
             }
 
 
         } catch (err) {
-            result[a].ok = false;
-            result[a].error = err;
+            result.accounts[a].ok = false;
+            result.accounts[a].error = err;
         }
 
         await browser.close();
@@ -86,7 +132,7 @@ app.get('/report/:trpID', async (req, res) => {
         if (!err) {
             res.status(200).json({ ok: true, data: JSON.parse(data) });
         } else {
-            res.status(404).json({ ok: false });
+            res.status(404).json({ ok: false, code: "report_not_found" });
         }
     });
 })
