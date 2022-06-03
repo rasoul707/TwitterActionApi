@@ -208,7 +208,6 @@ const doTask = async (page, task, tags) => {
             if (task[4]) {
                 const text = chooseRandomTag(tags, task[5]) + " ";
                 actions.push('tag')
-                actions.push(task[5])
                 const rep = await page.click('[aria-label="Reply"]').catch((e) => { return 'error'; });
 
                 if (rep === 'error') {

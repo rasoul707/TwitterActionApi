@@ -37,7 +37,7 @@ app.post('/run', async (req, res) => {
         const browser = await lunchBrowser();
         const _page = await newPage(browser, useragent);
 
-        result.push({ account: account[0] });
+        result.push({ account: account[a] });
         try {
             // login
             const stepLogin = await login(_page, account);
