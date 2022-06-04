@@ -92,6 +92,7 @@ app.post('/run', async (req, res) => {
             result.accounts[a].ok = true;
             result.accounts[a].step = stepLogin;
 
+
             // tasks
             for (let t = 0; t < data.tasks.length; t++) {
                 const task = data.tasks[t];

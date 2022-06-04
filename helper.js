@@ -155,9 +155,12 @@ const login = async (page, account) => {
             }
 
             await acceptCookie(page);
+            await page.close();
 
             resolve(step);
+
         } catch (error) {
+            await page.close();
             reject(error);
         }
     });
@@ -249,11 +252,15 @@ const doTask = async (page, task, tags) => {
                     }
                 }
             }
+            await page.close();
             resolve({ actions, fails })
         }
         catch (error) {
+            await page.close();
             reject(error);
+
         }
+
     });
 }
 
