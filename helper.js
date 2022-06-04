@@ -176,7 +176,7 @@ const chooseRandomTag = (list, count) => {
         list.splice(0, 1);
         list = list.map((e) => '@' + e);
     }
-    console.log(list);
+
 
     let result = []
     for (let i = 0; i < count; i++) {
@@ -244,7 +244,7 @@ const doTask = async (page, task, tags) => {
                     } else {
                         await page.keyboard.type(text, { delay: 100 });
                         await page.waitForTimeout(500);
-                        await page.click('[role="dialog"] [data-testid="toolBar"] [role="button"]:not([aria-label])');
+                        await page.click('[role="dialog"] [data-testid="toolBar"] [data-testid="tweetButton"]');
                         await page.waitForTimeout(1000);
                     }
                 }
