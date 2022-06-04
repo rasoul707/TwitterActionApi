@@ -82,13 +82,13 @@ app.post('/run', async (req, res) => {
 
         const useragent = new UserAgent({ "deviceCategory": "desktop" }).toString();
         const browser = await lunchBrowser();
-        const _page = await newPage(browser, useragent);
 
         result.accounts.push({ id: account[0] });
-
+        const _page0 = await newPage(browser, useragent);
         try {
             // login
-            const stepLogin = await login(_page, account);
+
+            const stepLogin = await login(_page0, account);
             result.accounts[a].ok = true;
             result.accounts[a].step = stepLogin;
 
@@ -98,15 +98,17 @@ app.post('/run', async (req, res) => {
                 const task = data.tasks[t];
 
                 result.accountTasks.push({ accountID: account[0], taskID: task[0] })
+                const _page1 = await newPage(browser, useragent);
                 try {
                     // do task
-                    const _result = await doTask(_page, task, data.tags);
+                    const _result = await doTask(_page1, task, data.tags);
                     result.accountTasks[result.accountTasks.length - 1].ok = true;
                     result.accountTasks[result.accountTasks.length - 1].actions = _result.actions.join(",");
                     result.accountTasks[result.accountTasks.length - 1].fails = _result.fails.join(",");
                 } catch (err) {
                     result.accountTasks[result.accountTasks.length - 1].ok = false;
                 }
+                await _page1.close()
             }
 
 
@@ -114,7 +116,7 @@ app.post('/run', async (req, res) => {
             result.accounts[a].ok = false;
             result.accounts[a].error = err;
         }
-
+        await _page0.close();
         await browser.close();
     }
 
