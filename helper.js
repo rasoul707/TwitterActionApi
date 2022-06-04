@@ -167,6 +167,15 @@ const login = async (page, account) => {
 
 
 const chooseRandomTag = (list, count) => {
+
+    if (typeof list !== 'object') {
+        list = list.replace("\n", "");
+        list = list.replace(",", "");
+        list = list.split("@");
+        list.splice(0, 1);
+        list = list.map((e) => '@' + e);
+    }
+
     let result = []
     for (let i = 0; i < count; i++) {
         const random = Math.floor(Math.random() * list.length);
