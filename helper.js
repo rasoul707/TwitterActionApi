@@ -169,9 +169,9 @@ const login = async (page, account) => {
 const chooseRandomTag = (list, count) => {
 
     if (typeof list !== 'object') {
-        list = list.replace("\n", "");
-        list = list.replace(",", "");
-        list = list.replace(" ", "");
+        list = list.replaceAll("\n", "");
+        list = list.replaceAll(",", "");
+        list = list.replaceAll(" ", "");
         list = list.split("@");
         list.splice(0, 1);
         list = list.map((e) => '@' + e);
