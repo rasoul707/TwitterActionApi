@@ -107,6 +107,8 @@ app.post('/run', async (req, res) => {
                     result.accountTasks[result.accountTasks.length - 1].fails = _result.fails.join(",");
                 } catch (err) {
                     result.accountTasks[result.accountTasks.length - 1].ok = false;
+                    result.accountTasks[result.accountTasks.length - 1].actions = '-';
+                    result.accountTasks[result.accountTasks.length - 1].fails = '-';
                 }
                 await _page1.close()
             }
