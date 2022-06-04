@@ -21,7 +21,7 @@ app.get('/', async (req, res) => {
 // ==> post
 app.post('/run', async (req, res) => {
     const trpID = 'TRP_' + new Date().getTime();
-    console.log('#' + trpID, 'New Tasks Received');
+    console.log(new Date(), '#' + trpID, 'New Tasks Received');
     const data = req.body;
 
     res.status(200).json({ ok: true, trpID });
@@ -119,7 +119,7 @@ app.post('/run', async (req, res) => {
 
 
     fs.writeFileSync("reports/" + trpID + ".json", JSON.stringify(result));
-    console.log("#" + trpID, ": Finished")
+    console.log(new Date(), "#" + trpID, ": Finished")
 
 });
 
@@ -128,7 +128,6 @@ app.post('/run', async (req, res) => {
 
 app.get('/report/:trpID', async (req, res) => {
     const { trpID } = req.params
-    console.log("trpID", trpID);
     fs.readFile("reports/" + trpID + ".json", { encoding: 'utf-8' }, function (err, data) {
         if (!err) {
             res.status(200).json({ ok: true, data: JSON.parse(data) });
