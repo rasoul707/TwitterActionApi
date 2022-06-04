@@ -176,6 +176,7 @@ const chooseRandomTag = (list, count) => {
         list.splice(0, 1);
         list = list.map((e) => '@' + e);
     }
+    console.log(list);
 
     let result = []
     for (let i = 0; i < count; i++) {
