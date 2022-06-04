@@ -128,6 +128,7 @@ app.post('/run', async (req, res) => {
 
 app.get('/report/:trpID', async (req, res) => {
     const { trpID } = req.params
+    console.log("trpID", trpID);
     fs.readFile("reports/" + trpID + ".json", { encoding: 'utf-8' }, function (err, data) {
         if (!err) {
             res.status(200).json({ ok: true, data: JSON.parse(data) });
