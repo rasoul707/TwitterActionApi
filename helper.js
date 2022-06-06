@@ -211,9 +211,8 @@ const doTask = async (page, task, tags) => {
             await page.waitForSelector('article', { visible: true, timeout: 10000 }).catch((e) => { throw "tweet_failed" });
 
             if (await page.waitForSelector('[aria-label="Account menu"]', { visible: true, timeout: 10000 }).catch((e) => { return 'error' }) === 'error') {
-                await page.waitForTimeout(2000);
                 await page.reload({ waitUntil: "domcontentloaded" });
-                await page.waitForTimeout(2000);
+                await page.waitForTimeout(1000);
             }
 
             await page.waitForTimeout(2000);

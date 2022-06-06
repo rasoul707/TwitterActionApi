@@ -27,8 +27,6 @@ app.post('/run', async (req, res) => {
 
     res.status(200).json({ ok: true, trpID });
 
-    console.log(data);
-
 
     let result = { accounts: [], accountTasks: [] };
 
@@ -104,8 +102,6 @@ app.post('/run', async (req, res) => {
     fs.writeFileSync("reports/" + trpID + ".json", JSON.stringify(result));
 
     console.log(new Date(), "#" + trpID, ": Finished")
-    console.log(result);
-
 });
 
 
