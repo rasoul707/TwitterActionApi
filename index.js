@@ -43,23 +43,26 @@ app.post('/run', async (req, res) => {
         try {
             // login
             const _page0 = await newPage(browser, useragent);
+
+            /****/
+            const _v0 = trpID + '-' + account[0] + '-' + 'login';
+            await record({
+                browser: browser,
+                page: _page0,
+                output: _v0 + '.webm',
+                fps: 60,
+                frames: 60 * 5,
+                prepare: function () { },
+                render: function () { }
+            });
+            console.log(_v0);
+            /****/
+
             const stepLogin = await login(_page0, account);
+            await _page0.close();
             result.accounts[a].ok = true;
             result.accounts[a].step = stepLogin;
 
-            // /****/
-            // await record({
-            //     browser: browser,
-            //     page: _page0,
-            //     output: trpID + '-' + account[0] + '-' + 'login' + '.webm',
-            //     fps: 60,
-            //     frames: 60 * 5,
-            //     prepare: function () { },
-            //     render: function () { }
-            // });
-            // /****/
-
-            await _page0.close();
 
 
             // tasks
@@ -71,6 +74,21 @@ app.post('/run', async (req, res) => {
                 try {
                     // do task
                     const _page1 = await newPage(browser, useragent);
+
+                    /****/
+                    const _v1 = trpID + '-' + account[0] + '-' + task[0];
+                    await record({
+                        browser: browser,
+                        page: _page1,
+                        output: _v1 + '.webm',
+                        fps: 60,
+                        frames: 60 * 5,
+                        prepare: function () { },
+                        render: function () { }
+                    });
+                    console.log(_v1);
+                    /****/
+
                     const _result = await doTask(_page1, task, data.tags);
                     await _page1.close();
                     result.accountTasks[result.accountTasks.length - 1].ok = true;
@@ -128,7 +146,7 @@ app.get('/video/:vid', async (req, res) => {
         if (!err) {
             res.send(data);
         } else {
-            res.status(404).json({ ok: false, code: "report_not_found" });
+            res.status(404).json({ ok: false, code: "video_not_found" });
         }
     });
 });
