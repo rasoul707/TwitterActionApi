@@ -84,10 +84,10 @@ app.post('/run', async (req, res) => {
         const browser = await lunchBrowser();
 
         result.accounts.push({ id: account[0] });
-        const _page0 = await newPage(browser, useragent);
+
         try {
             // login
-
+            const _page0 = await newPage(browser, useragent);
             const stepLogin = await login(_page0, account);
             result.accounts[a].ok = true;
             result.accounts[a].step = stepLogin;
@@ -98,13 +98,15 @@ app.post('/run', async (req, res) => {
                 const task = data.tasks[t];
 
                 result.accountTasks.push({ accountID: account[0], taskID: task[0] })
-                const _page1 = await newPage(browser, useragent);
+
                 try {
                     // do task
+                    const _page1 = await newPage(browser, useragent);
                     const _result = await doTask(_page1, task, data.tags);
                     result.accountTasks[result.accountTasks.length - 1].ok = true;
                     result.accountTasks[result.accountTasks.length - 1].actions = _result.actions.join(",");
                     result.accountTasks[result.accountTasks.length - 1].fails = _result.fails.join(",");
+                    await _page1.close();
                 } catch (err) {
                     result.accountTasks[result.accountTasks.length - 1].ok = false;
                     let allactions = []
@@ -115,15 +117,15 @@ app.post('/run', async (req, res) => {
                     result.accountTasks[result.accountTasks.length - 1].actions = allactions.join(",");
                     result.accountTasks[result.accountTasks.length - 1].fails = allactions.join(",");
                 }
-                await _page1.close()
-            }
 
+            }
+            await _page0.close();
 
         } catch (err) {
             result.accounts[a].ok = false;
             result.accounts[a].error = err;
         }
-        await _page0.close();
+
         await browser.close();
     }
 
