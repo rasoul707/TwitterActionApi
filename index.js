@@ -8,7 +8,7 @@ const express = require('express');
 const UserAgent = require('user-agents');
 const { newPage, lunchBrowser, login, doTask } = require('./helper');
 const fs = require('fs');
-
+const { record } = require('puppeteer-recorder');
 const app = express();
 app.use(express.json())
 
