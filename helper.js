@@ -10,7 +10,7 @@ const puppeteer = require('puppeteer');
 const chromeOptions = {
     headless: true,
     defaultViewport: null,
-    executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe',
+    // executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe',
     args: [
         "--incognito",
         "--no-sandbox",
