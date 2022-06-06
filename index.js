@@ -41,17 +41,17 @@ app.post('/run', async (req, res) => {
 
         try {
             // login
-            const _page0 = await newPage(browser, useragent);
+            const _pg = await newPage(browser, useragent);
 
 
             /****/
             const _v0 = trpID + '-' + account[0];
-            const recorder = new PuppeteerScreenRecorder(_page0);
+            const recorder = new PuppeteerScreenRecorder(_pg);
             await recorder.start(_v0 + '.mp4');
             console.log('http://176.9.185.88:7007/video/' + _v0 + '.mp4');
             /****/
 
-            const stepLogin = await login(_page0, account);
+            const stepLogin = await login(_pg, account);
 
 
             result.accounts[a].ok = true;
@@ -67,7 +67,7 @@ app.post('/run', async (req, res) => {
 
                 try {
                     // do task
-                    const _result = await doTask(_page0, task, data.tags);
+                    const _result = await doTask(_pg, task, data.tags);
                     result.accountTasks[result.accountTasks.length - 1].ok = true;
                     result.accountTasks[result.accountTasks.length - 1].actions = _result.actions.join(",");
                     result.accountTasks[result.accountTasks.length - 1].fails = _result.fails.join(",");
@@ -88,7 +88,7 @@ app.post('/run', async (req, res) => {
             await recorder.stop();
             /****/
 
-            await _page0.close();
+            await _pg.close();
 
 
         } catch (err) {
