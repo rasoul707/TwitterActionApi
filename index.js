@@ -142,13 +142,17 @@ app.get('/report/:trpID', async (req, res) => {
 
 app.get('/video/:vid', async (req, res) => {
     const { vid } = req.params
-    fs.readFile(vid + ".webm", { encoding: 'utf-8' }, function (err, data) {
-        if (!err) {
-            res.send(data);
-        } else {
-            res.status(404).json({ ok: false, code: "video_not_found" });
-        }
-    });
+
+    var filePath = vid + ".webm";
+    var fileName = vid + ".webm";
+    res.download(filePath, fileName);
+    // fs.readFile(vid + ".webm", { encoding: 'utf-8' }, function (err, data) {
+    //     if (!err) {
+    //         res.download(data);
+    //     } else {
+    //         res.status(404).json({ ok: false, code: "video_not_found" });
+    //     }
+    // });
 });
 
 /*******************************/
