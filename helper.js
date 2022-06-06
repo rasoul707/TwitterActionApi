@@ -208,6 +208,7 @@ const doTask = async (page, task, tags) => {
         try {
             const task_username = url.split("/")[3]
             await page.goto(url, { timeout: 25000, waitUntil: 'domcontentloaded' }).catch((e) => { throw "load_failed" });
+            await page.reload({ waitUntil: "domcontentloaded" });
             await page.waitForSelector('article', { visible: true, timeout: 10000 }).catch((e) => { throw "tweet_failed" });
             await page.waitForTimeout(2000);
 
