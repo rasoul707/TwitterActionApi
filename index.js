@@ -8,8 +8,9 @@ const express = require('express');
 const UserAgent = require('user-agents');
 const { newPage, lunchBrowser, login, doTask } = require('./helper');
 const fs = require('fs');
-const { record } = require('puppeteer-recorder');
 const app = express();
+const { PuppeteerScreenRecorder } = require('puppeteer-screen-recorder');
+
 app.use(express.json())
 
 
@@ -44,21 +45,20 @@ app.post('/run', async (req, res) => {
             // login
             const _page0 = await newPage(browser, useragent);
 
+
             /****/
             const _v0 = trpID + '-' + account[0] + '-' + 'login';
-            record({
-                browser: browser,
-                page: _page0,
-                output: _v0 + '.webm',
-                fps: 30,
-                frames: 30 * 30,
-                prepare: function () { },
-                render: function () { }
-            });
+            const recorder = new PuppeteerScreenRecorder(_page0);
+            await recorder.start(_v0 + '.mp4');
             console.log(_v0);
             /****/
 
             const stepLogin = await login(_page0, account);
+
+            /****/
+            await recorder.stop();
+            /****/
+
             await _page0.close();
             result.accounts[a].ok = true;
             result.accounts[a].step = stepLogin;
@@ -74,20 +74,6 @@ app.post('/run', async (req, res) => {
                 try {
                     // do task
                     const _page1 = await newPage(browser, useragent);
-
-                    // /****/
-                    // const _v1 = trpID + '-' + account[0] + '-' + task[0];
-                    // await record({
-                    //     browser: browser,
-                    //     page: _page1,
-                    //     output: _v1 + '.webm',
-                    //     fps: 30,
-                    //     frames: 30 * 5,
-                    //     prepare: function () { },
-                    //     render: function () { }
-                    // });
-                    // console.log(_v1);
-                    // /****/
 
                     const _result = await doTask(_page1, task, data.tags);
                     await _page1.close();
@@ -142,8 +128,8 @@ app.get('/report/:trpID', async (req, res) => {
 
 app.get('/video/:vid', async (req, res) => {
     const { vid } = req.params
-    var filePath = vid + ".webm";
-    var fileName = vid + ".webm";
+    var filePath = vid + ".mp4";
+    var fileName = vid + ".mp4";
     res.download(filePath, fileName);
 });
 
