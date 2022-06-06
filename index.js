@@ -50,8 +50,8 @@ app.post('/run', async (req, res) => {
                 browser: browser,
                 page: _page0,
                 output: _v0 + '.webm',
-                fps: 60,
-                frames: 60 * 5,
+                fps: 30,
+                frames: 30 * 30,
                 prepare: function () { },
                 render: function () { }
             });
@@ -75,19 +75,19 @@ app.post('/run', async (req, res) => {
                     // do task
                     const _page1 = await newPage(browser, useragent);
 
-                    /****/
-                    const _v1 = trpID + '-' + account[0] + '-' + task[0];
-                    await record({
-                        browser: browser,
-                        page: _page1,
-                        output: _v1 + '.webm',
-                        fps: 60,
-                        frames: 60 * 5,
-                        prepare: function () { },
-                        render: function () { }
-                    });
-                    console.log(_v1);
-                    /****/
+                    // /****/
+                    // const _v1 = trpID + '-' + account[0] + '-' + task[0];
+                    // await record({
+                    //     browser: browser,
+                    //     page: _page1,
+                    //     output: _v1 + '.webm',
+                    //     fps: 30,
+                    //     frames: 30 * 5,
+                    //     prepare: function () { },
+                    //     render: function () { }
+                    // });
+                    // console.log(_v1);
+                    // /****/
 
                     const _result = await doTask(_page1, task, data.tags);
                     await _page1.close();
