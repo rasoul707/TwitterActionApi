@@ -47,7 +47,7 @@ app.post('/run', async (req, res) => {
             /****/
             const _v0 = trpID + '-' + account[0];
             const recorder = new PuppeteerScreenRecorder(_pg);
-            await recorder.start(_v0 + '.mp4');
+            await recorder.start("screens/" + _v0 + ".mp4");
             console.log('http://176.9.185.88:7007/video/' + _v0 + '.mp4');
             /****/
 
@@ -124,7 +124,7 @@ app.get('/report/:trpID', async (req, res) => {
 
 app.get('/video/:vid', async (req, res) => {
     const { vid } = req.params
-    var filePath = vid + ".mp4";
+    var filePath = "screens/" + vid + ".mp4";
     var fileName = vid + ".mp4";
     res.download(filePath, fileName);
 });
