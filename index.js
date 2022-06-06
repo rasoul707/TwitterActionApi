@@ -46,7 +46,7 @@ app.post('/run', async (req, res) => {
 
             /****/
             const _v0 = trpID + '-' + account[0] + '-' + 'login';
-            await record({
+            record({
                 browser: browser,
                 page: _page0,
                 output: _v0 + '.webm',
@@ -142,17 +142,9 @@ app.get('/report/:trpID', async (req, res) => {
 
 app.get('/video/:vid', async (req, res) => {
     const { vid } = req.params
-
     var filePath = vid + ".webm";
     var fileName = vid + ".webm";
     res.download(filePath, fileName);
-    // fs.readFile(vid + ".webm", { encoding: 'utf-8' }, function (err, data) {
-    //     if (!err) {
-    //         res.download(data);
-    //     } else {
-    //         res.status(404).json({ ok: false, code: "video_not_found" });
-    //     }
-    // });
 });
 
 /*******************************/
