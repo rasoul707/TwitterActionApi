@@ -48,7 +48,7 @@ app.post('/run', async (req, res) => {
             const _v0 = trpID + '-' + account[0];
             const recorder = new PuppeteerScreenRecorder(_page0);
             await recorder.start(_v0 + '.mp4');
-            console.log(_v0);
+            console.log('http://176.9.185.88:7007/video/' + _v0 + '.mp4');
             /****/
 
             const stepLogin = await login(_page0, account);
