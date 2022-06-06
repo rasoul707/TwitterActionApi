@@ -47,7 +47,7 @@ app.post('/run', async (req, res) => {
 
 
             /****/
-            const _v0 = trpID + '-' + account[0] + '-' + 'login';
+            const _v0 = trpID + '-' + account[0];
             const recorder = new PuppeteerScreenRecorder(_page0);
             await recorder.start(_v0 + '.mp4');
             console.log(_v0);
@@ -55,11 +55,7 @@ app.post('/run', async (req, res) => {
 
             const stepLogin = await login(_page0, account);
 
-            /****/
-            await recorder.stop();
-            /****/
 
-            await _page0.close();
             result.accounts[a].ok = true;
             result.accounts[a].step = stepLogin;
 
@@ -73,10 +69,7 @@ app.post('/run', async (req, res) => {
 
                 try {
                     // do task
-                    const _page1 = await newPage(browser, useragent);
-
-                    const _result = await doTask(_page1, task, data.tags);
-                    await _page1.close();
+                    const _result = await doTask(_page0, task, data.tags);
                     result.accountTasks[result.accountTasks.length - 1].ok = true;
                     result.accountTasks[result.accountTasks.length - 1].actions = _result.actions.join(",");
                     result.accountTasks[result.accountTasks.length - 1].fails = _result.fails.join(",");
@@ -91,6 +84,13 @@ app.post('/run', async (req, res) => {
                     result.accountTasks[result.accountTasks.length - 1].fails = allactions.join(",");
                 }
             }
+
+
+            /****/
+            await recorder.stop();
+            /****/
+
+            await _page0.close();
 
 
         } catch (err) {
