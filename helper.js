@@ -10,7 +10,7 @@ const puppeteer = require('puppeteer');
 const chromeOptions = {
     headless: true,
     defaultViewport: null,
-    // executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe',
+    executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe',
     args: [
         "--incognito",
         "--no-sandbox",
@@ -209,25 +209,28 @@ const doTask = async (page, task, tags) => {
             const task_username = url.split("/")[3]
             await page.goto(url, { timeout: 25000, waitUntil: 'domcontentloaded' }).catch((e) => { throw "load_failed" });
             await page.waitForSelector('article', { visible: true, timeout: 10000 }).catch((e) => { throw "tweet_failed" });
+            await page.waitForTimeout(2000);
 
             // follow
             if (follow) {
                 actions.push('follow');
 
                 if (await page.waitForSelector('[aria-label="Follow @' + task_username + '"]', { visible: true, timeout: 10000 }).catch((e) => { return 'error' }) === 'error') {
-                    if (await page.waitForSelector('[aria-label="Following @' + task_username + '"]', { visible: true, timeout: 10000 }).catch((e) => { console.log('1', e); return 'error' }) === 'error') {
+                    if (await page.waitForSelector('[aria-label="Following @' + task_username + '"]', { visible: true, timeout: 10000 }).catch((e) => { return 'error' }) === 'error') {
                         fails.push('follow');
                     }
                 } else {
-                    if (await page.click('[aria-label="Follow @' + task_username + '"]').catch((e) => { console.log('2', e); return 'error' }) === 'error') {
+
+                    if (await page.click('[aria-label="Follow @' + task_username + '"]').catch((e) => { return 'error' }) === 'error') {
                         fails.push('follow');
                     } else {
                         await page.waitForTimeout(500);
-                        if (await page.waitForSelector('[aria-label="Following @' + task_username + '"]', { visible: true, timeout: 10000 }).catch((e) => { console.log('3', e); return 'error' }) === 'error') {
+                        if (await page.waitForSelector('[aria-label="Following @' + task_username + '"]', { visible: true, timeout: 10000 }).catch((e) => { return 'error' }) === 'error') {
                             fails.push('follow');
                         }
                     }
                 }
+                await page.waitForTimeout(1000);
             }
             // like
             if (like) {
@@ -247,6 +250,7 @@ const doTask = async (page, task, tags) => {
                         }
                     }
                 }
+                await page.waitForTimeout(1000);
             }
             // retweet
             if (retweet) {
@@ -260,15 +264,17 @@ const doTask = async (page, task, tags) => {
                     if (await page.click('[aria-label="Retweet"]').catch((e) => { return 'error' }) === 'error') {
                         fails.push('retweet');
                     } else {
+                        await page.waitForTimeout(1000);
                         await page.keyboard.press('ArrowDown');
                         await page.keyboard.press('ArrowDown');
                         await page.keyboard.press('Enter');
-                        await page.waitForTimeout(500);
+                        await page.waitForTimeout(1000);
                         if (await page.waitForSelector('[aria-label="Retweeted"]', { visible: true, timeout: 10000 }).catch((e) => { return 'error' }) === 'error') {
                             fails.push('retweet');
                         }
                     }
                 }
+                await page.waitForTimeout(1000);
             }
             // tag
             if (tag) {
@@ -284,6 +290,7 @@ const doTask = async (page, task, tags) => {
                         if (await page.waitForSelector('[role="dialog"] [aria-label="Tweet text"]', { visible: true, timeout: 10000 }).catch((e) => { return 'error' }) === 'error') {
                             fails.push('tag');
                         } else {
+                            await page.waitForTimeout(1000);
                             await page.keyboard.type(text, { delay: 100 });
                             await page.waitForTimeout(500);
                             await page.click('[role="dialog"] [data-testid="toolBar"] [data-testid="tweetButton"]');
@@ -291,6 +298,7 @@ const doTask = async (page, task, tags) => {
                         }
                     }
                 }
+                await page.waitForTimeout(1000);
             }
             resolve({ actions, fails })
         }
