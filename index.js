@@ -28,51 +28,6 @@ app.post('/run', async (req, res) => {
 
     console.log(data);
 
-    /*
-
-    data = {
-        accounts: [
-            [id, username, password, email],
-        ],
-        tasks: [
-            [
-                id,
-                url,
-                .
-                .
-                .
-
-            ],
-        ],
-        tags: [...]
-    }
-
-
-
-    result = {
-        accounts: [
-            {
-                ok: ok,
-                id: id,
-                step: ,
-                error,
-            }
-        ],
-        accountTasks: [
-            {
-                ok: true,
-                taskID: taskID,
-                accountID: accountID,
-                actions,
-                fails,
-            }
-        ]
-
-    }
-
-
-    */
-
 
     let result = { accounts: [], accountTasks: [] };
 
@@ -92,6 +47,20 @@ app.post('/run', async (req, res) => {
             result.accounts[a].ok = true;
             result.accounts[a].step = stepLogin;
 
+            // /****/
+            // await record({
+            //     browser: browser,
+            //     page: _page0,
+            //     output: trpID + '-' + account[0] + '-' + 'login' + '.webm',
+            //     fps: 60,
+            //     frames: 60 * 5,
+            //     prepare: function () { },
+            //     render: function () { }
+            // });
+            // /****/
+
+            await _page0.close();
+
 
             // tasks
             for (let t = 0; t < data.tasks.length; t++) {
@@ -103,10 +72,10 @@ app.post('/run', async (req, res) => {
                     // do task
                     const _page1 = await newPage(browser, useragent);
                     const _result = await doTask(_page1, task, data.tags);
+                    await _page1.close();
                     result.accountTasks[result.accountTasks.length - 1].ok = true;
                     result.accountTasks[result.accountTasks.length - 1].actions = _result.actions.join(",");
                     result.accountTasks[result.accountTasks.length - 1].fails = _result.fails.join(",");
-                    await _page1.close();
                 } catch (err) {
                     result.accountTasks[result.accountTasks.length - 1].ok = false;
                     let allactions = []
@@ -117,9 +86,8 @@ app.post('/run', async (req, res) => {
                     result.accountTasks[result.accountTasks.length - 1].actions = allactions.join(",");
                     result.accountTasks[result.accountTasks.length - 1].fails = allactions.join(",");
                 }
-
             }
-            await _page0.close();
+
 
         } catch (err) {
             result.accounts[a].ok = false;
@@ -128,9 +96,6 @@ app.post('/run', async (req, res) => {
 
         await browser.close();
     }
-
-    // return res.json(result)
-
 
     fs.writeFileSync("reports/" + trpID + ".json", JSON.stringify(result));
 
@@ -153,6 +118,22 @@ app.get('/report/:trpID', async (req, res) => {
     });
 })
 
+
+
+/******************************/
+
+app.get('/video/:vid', async (req, res) => {
+    const { vid } = req.params
+    fs.readFile(vid + ".webm", { encoding: 'utf-8' }, function (err, data) {
+        if (!err) {
+            res.send(data);
+        } else {
+            res.status(404).json({ ok: false, code: "report_not_found" });
+        }
+    });
+});
+
+/*******************************/
 
 
 app.listen(7007, () => console.log('Server is running on 7007'));
