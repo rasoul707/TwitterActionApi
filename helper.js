@@ -311,7 +311,7 @@ const doTask = async (page, task, tags) => {
             // tag
             if (tag) {
                 actions.push('tag')
-                if (tags !== '') {
+                if (tags === '') {
                     fails.push('tag');
                 }
                 else {
