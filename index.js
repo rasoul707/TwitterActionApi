@@ -121,9 +121,9 @@ app.get('/report/:trpID', async (req, res) => {
 
 app.get('/video/:vid', async (req, res) => {
     const { vid } = req.params
-    var filePath = "screens/" + vid + ".mp4";
-    var fileName = vid + ".mp4";
-    res.download(filePath, fileName);
+    const fileName = vid + ".mp4";
+    const filePath = "screens/" + fileName;
+    res.sendFile(filePath);
 });
 
 /*******************************/
