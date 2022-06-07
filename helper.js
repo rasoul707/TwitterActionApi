@@ -142,14 +142,14 @@ const login = async (page, account) => {
                 if (await page.waitForSelector('input[name="text"][type="email"]', { visible: true, timeout: 5000 }).catch((e) => { return 'error' }) === 'error') {
                     // want phone check?
                     if (await page.waitForSelector('input[name="text"][type="tel"]', { visible: true, timeout: 5000 }).catch((e) => { return 'error' }) === 'error') {
-                        throw "Must check password";
+                        throw "Check password";
                     }
                     // want phone
                     else {
                         await page.type('input[name="text"][type="tel"]', phone);
                         await page.keyboard.press('Enter');
                         if (await page.waitForNavigation({ timeout: 10000, waitUntil: 'domcontentloaded' }).catch((e) => { return 'error' }) === 'error') {
-                            throw "Must check & verify phone";
+                            throw "Check & verify phone";
                         }
                         else {
                             step = "After phone";
@@ -161,7 +161,7 @@ const login = async (page, account) => {
                     await page.type('input[name="text"][type="email"]', email);
                     await page.keyboard.press('Enter');
                     if (await page.waitForNavigation({ timeout: 10000, waitUntil: 'domcontentloaded' }).catch((e) => { return 'error' }) === 'error') {
-                        throw "Must check & verify email";
+                        throw "Check & verify email";
                     }
                     else {
                         step = "After email";
