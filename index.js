@@ -123,7 +123,7 @@ app.get('/video/:vid', async (req, res) => {
     const { vid } = req.params
     const fileName = vid + ".mp4";
     const filePath = "screens/" + fileName;
-    res.sendFile(filePath);
+    res.sendFile(filePath, { root: __dirname });
 });
 
 /*******************************/
