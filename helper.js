@@ -310,23 +310,29 @@ const doTask = async (page, task, tags) => {
             }
             // tag
             if (tag) {
-                const text = chooseRandomTag(tags, tagCount) + " ";
                 actions.push('tag')
-
-                if (await page.click('[aria-label="Reply"]').catch((e) => { return 'error' }) === 'error') {
+                if (tags !== '') {
                     fails.push('tag');
-                } else {
-                    if (await page.waitForSelector('[role="dialog"] [aria-label="Tweet text"]', { visible: true, timeout: 20000 }).catch((e) => { return 'error' }) === 'error') {
+                }
+                else {
+                    const text = chooseRandomTag(tags, tagCount) + " ";
+                    if (await page.click('[aria-label="Reply"]').catch((e) => { return 'error' }) === 'error') {
                         fails.push('tag');
                     } else {
-                        await page.waitForTimeout(1000);
-                        await page.keyboard.type(text, { delay: 100 });
-                        await page.waitForTimeout(500);
-                        await page.click('[role="dialog"] [data-testid="toolBar"] [data-testid="tweetButton"]');
-                        await page.waitForTimeout(1000);
+                        if (await page.waitForSelector('[role="dialog"] [aria-label="Tweet text"]', { visible: true, timeout: 10000 }).catch((e) => { return 'error' }) === 'error') {
+                            fails.push('tag');
+                        } else {
+                            await page.waitForTimeout(1000);
+                            await page.keyboard.type(text, { delay: 100 });
+                            await page.waitForTimeout(1000);
+                            await page.click('[role="dialog"] [data-testid="toolBar"] [data-testid="tweetButton"]');
+                            if (await page.waitForSelector('[role="dialog"] [aria-label="Tweet text"]', { hidden: true, timeout: 10000 }).catch((e) => { return 'error' }) === 'error') {
+                                fails.push('tag');
+                            }
+                        }
                     }
+                    await page.waitForTimeout(1000);
                 }
-                await page.waitForTimeout(1000);
             }
             resolve({ actions, fails })
         }

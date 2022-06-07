@@ -77,13 +77,6 @@ app.post('/run', async (req, res) => {
                     }
                     result.accountTasks[result.accountTasks.length - 1].ok = false;
                     result.accountTasks[result.accountTasks.length - 1].error = err;
-                    let allactions = []
-                    if (task[2]) allactions.push('follow');
-                    if (task[3]) allactions.push('like');
-                    if (task[4]) allactions.push('retweet');
-                    if (task[5]) allactions.push('tag');
-                    result.accountTasks[result.accountTasks.length - 1].actions = allactions.join(",");
-                    result.accountTasks[result.accountTasks.length - 1].fails = allactions.join(",");
                 }
             }
 
