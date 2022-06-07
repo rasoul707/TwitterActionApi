@@ -107,7 +107,6 @@ const acceptCookie = async (page) => {
 const login = async (page, account) => {
 
     const twitterLoginPageUrl = 'https://twitter.com/i/flow/login';
-    const twitterHomePageUrl = 'https://twitter.com/home';
     const twitterAccessPageUrl = 'https://twitter.com/account/access';
 
     let step = '';
