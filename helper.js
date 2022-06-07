@@ -107,60 +107,91 @@ const acceptCookie = async (page) => {
 const login = async (page, account) => {
 
     const twitterLoginPageUrl = 'https://twitter.com/i/flow/login';
+    const twitterHomePageUrl = 'https://twitter.com/home';
+    const twitterAccessPageUrl = 'https://twitter.com/account/access';
+
     let step = '';
 
     const id = account[0];
     const username = account[1];
     const password = account[2];
     const email = account[3];
+    const phone = account[4];
 
 
     return new Promise(async (resolve, reject) => {
 
         try {
-            await page.goto(twitterLoginPageUrl, { timeout: 25000, waitUntil: 'domcontentloaded' }).catch((e) => { throw "load_failed" });
+            await page.goto(twitterLoginPageUrl, { timeout: 25000, waitUntil: 'domcontentloaded' }).catch((e) => { throw "Load failed" });
 
-            await page.waitForSelector('input[name="text"]', { visible: true, timeout: 10000 }).catch((e) => { throw "username_failed" });
+            await page.waitForSelector('input[name="text"]', { visible: true, timeout: 10000 }).catch((e) => { throw "Username failed" });
             await page.type('input[name="text"]', username);
 
             await page.keyboard.press('Enter');
 
-            await page.waitForSelector('input[name="password"]', { visible: true, timeout: 10000 }).catch((e) => { throw "password_failed" });
+            await page.waitForSelector('input[name="password"]', { visible: true, timeout: 5000 }).catch((e) => { throw "Password failed" });
             await page.type('input[name="password"]', password);
 
             await page.keyboard.press('Enter');
 
-            const nav1 = await page.waitForNavigation({ timeout: 10000, waitUntil: 'domcontentloaded' }).catch((e) => { return 'error' });
 
-            if (nav1 === 'error' && page.url() === twitterLoginPageUrl) {
-                const sec1 = await page.waitForSelector('input[name="text"][type="email"]', { visible: true, timeout: 10000 }).catch((e) => { return 'error' });
-                if (sec1 === 'error') {
-                    throw "password_incorrect"
+
+            // ###
+            if (await page.waitForNavigation({ timeout: 10000, waitUntil: 'domcontentloaded' }).catch((e) => { return 'error' }) === 'error') {
+                // want email check?
+                if (await page.waitForSelector('input[name="text"][type="email"]', { visible: true, timeout: 5000 }).catch((e) => { return 'error' }) === 'error') {
+                    // want phone check?
+                    if (await page.waitForSelector('input[name="text"][type="tel"]', { visible: true, timeout: 5000 }).catch((e) => { return 'error' }) === 'error') {
+                        throw "Must check password";
+                    }
+                    // want phone
+                    else {
+                        await page.type('input[name="text"][type="tel"]', phone);
+                        await page.keyboard.press('Enter');
+                        if (await page.waitForNavigation({ timeout: 10000, waitUntil: 'domcontentloaded' }).catch((e) => { return 'error' }) === 'error') {
+                            throw "Must check & verify phone";
+                        }
+                        else {
+                            step = "After phone";
+                        }
+                    }
                 }
+                // want email
                 else {
                     await page.type('input[name="text"][type="email"]', email);
                     await page.keyboard.press('Enter');
-                    const nav2 = await page.waitForNavigation({ timeout: 10000, waitUntil: 'domcontentloaded' }).catch((e) => { return 'error' });
-                    if (nav2 === 'error' && page.url() === twitterLoginPageUrl) {
-                        // *************************
-                        throw "must_verify_email"
-                        // *************************
+                    if (await page.waitForNavigation({ timeout: 10000, waitUntil: 'domcontentloaded' }).catch((e) => { return 'error' }) === 'error') {
+                        throw "Must check & verify email";
                     }
                     else {
-                        step = "email";
+                        step = "After email";
                     }
                 }
-            } else {
-                step = "password";
             }
+            else {
+                step = "After password";
+            }
+            // ###
 
-            await acceptCookie(page);
+
+
+            // ####
+            if (await page.waitForSelector('[aria-label="Account menu"]', { visible: true, timeout: 10000 }).catch((e) => { return 'error' }) === 'error') {
+                if (page.url() === twitterAccessPageUrl) {
+                    step = '';
+                    throw "Limit access";
+                } else {
+                    step = '';
+                    throw "Unknown error";
+                }
+            } else {
+                await acceptCookie(page);
+            }
+            // ####
 
 
             resolve(step);
-
         } catch (error) {
-
             reject(error);
         }
     });
@@ -207,12 +238,20 @@ const doTask = async (page, task, tags) => {
         let actions = [];
         try {
             const task_username = url.split("/")[3]
-            await page.goto(url, { timeout: 25000, waitUntil: 'domcontentloaded' }).catch((e) => { throw "load_failed" });
-            await page.waitForSelector('article', { visible: true, timeout: 10000 }).catch((e) => { throw "tweet_failed" });
+            await page.goto(url, { timeout: 25000, waitUntil: 'domcontentloaded' }).catch((e) => { throw "Load failed" });
+            await page.waitForSelector('article', { visible: true, timeout: 10000 }).catch((e) => { throw "Tweet failed" });
 
             if (await page.waitForSelector('[aria-label="Account menu"]', { visible: true, timeout: 10000 }).catch((e) => { return 'error' }) === 'error') {
                 await page.reload({ waitUntil: "domcontentloaded" });
                 await page.waitForTimeout(1000);
+            }
+
+            if (page.url() !== url) {
+                if (page.url() === twitterAccessPageUrl) {
+                    throw "Limit access"
+                } else {
+                    throw "Tweet error"
+                }
             }
 
             await page.waitForTimeout(2000);

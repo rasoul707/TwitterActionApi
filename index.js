@@ -72,7 +72,11 @@ app.post('/run', async (req, res) => {
                     result.accountTasks[result.accountTasks.length - 1].actions = _result.actions.join(",");
                     result.accountTasks[result.accountTasks.length - 1].fails = _result.fails.join(",");
                 } catch (err) {
+                    if (err === 'Limit access') {
+                        throw err;
+                    }
                     result.accountTasks[result.accountTasks.length - 1].ok = false;
+                    result.accountTasks[result.accountTasks.length - 1].error = err;
                     let allactions = []
                     if (task[2]) allactions.push('follow');
                     if (task[3]) allactions.push('like');
