@@ -14,9 +14,18 @@ const { PuppeteerScreenRecorder } = require('puppeteer-screen-recorder');
 app.use(express.json())
 
 
+
+let cancelsTrp = []
+const isCanceled = (trpID) => {
+    return cancelsTrp.includes(trpID)
+}
+
+
 app.get('/', async (req, res) => {
     res.send('<body style="display: flex;align-items: center;justify-content: center;">if you want to be&nbsp;<b>Happy</b>, be&nbsp;<b>Happy</b></body>');
 });
+
+
 
 
 // ==> post
@@ -32,6 +41,7 @@ app.post('/run', async (req, res) => {
 
     // accounts
     for (let a = 0; a < data.accounts.length; a++) {
+        if (isCanceled(trpID)) break
         const account = data.accounts[a];
 
         const useragent = new UserAgent({ "deviceCategory": "desktop" }).toString();
@@ -60,6 +70,7 @@ app.post('/run', async (req, res) => {
 
             // tasks
             for (let t = 0; t < data.tasks.length; t++) {
+                if (isCanceled(trpID)) break
                 const task = data.tasks[t];
 
                 result.accountTasks.push({ accountID: account[0], taskID: task[0] })
@@ -103,6 +114,14 @@ app.post('/run', async (req, res) => {
 
 
 
+app.get('/cancel/:trpID', async (req, res) => {
+    const { trpID } = req.params
+    if (!cancelsTrp.includes(trpID)) cancelsTrp.push(trpID)
+    return res.json({ ok: true })
+})
+
+
+
 app.get('/report/:trpID', async (req, res) => {
     const { trpID } = req.params
     fs.readFile("reports/" + trpID + ".json", { encoding: 'utf-8' }, function (err, data) {
@@ -115,9 +134,6 @@ app.get('/report/:trpID', async (req, res) => {
 })
 
 
-
-/******************************/
-
 app.get('/video/:vid', async (req, res) => {
     const { vid } = req.params
     const fileName = vid + ".mp4";
@@ -125,7 +141,7 @@ app.get('/video/:vid', async (req, res) => {
     res.sendFile(filePath, { root: __dirname });
 });
 
-/*******************************/
 
 
-app.listen(7007, () => console.log('Server is running on 7007'));
+
+app.listen(PORT, () => console.log(`Server is running on ${PORT}`));
