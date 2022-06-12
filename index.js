@@ -10,6 +10,8 @@ const { newPage, lunchBrowser, login, doTask } = require('./helper');
 const fs = require('fs');
 const app = express();
 const { PuppeteerScreenRecorder } = require('puppeteer-screen-recorder');
+require("dotenv").config();
+
 
 app.use(express.json())
 
@@ -142,6 +144,6 @@ app.get('/video/:vid', async (req, res) => {
 });
 
 
-
+const { PORT } = process.env
 
 app.listen(PORT, () => console.log(`Server is running on ${PORT}`));
