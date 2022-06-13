@@ -222,7 +222,7 @@ const chooseRandomTag = (list, count) => {
 
 
 
-const doTask = async (page, task, tags) => {
+const doTask = async (page, task, tags, isCanceled) => {
 
     const id = task[0];
     const url = task[1];
@@ -240,10 +240,14 @@ const doTask = async (page, task, tags) => {
             await page.goto(url, { timeout: 25000, waitUntil: 'domcontentloaded' }).catch((e) => { throw "Load failed" });
             await page.waitForSelector('article', { visible: true, timeout: 10000 }).catch((e) => { throw "Tweet failed" });
 
+            if (isCanceled()) throw "Canceled"
+
             if (await page.waitForSelector('[aria-label="Account menu"]', { visible: true, timeout: 10000 }).catch((e) => { return 'error' }) === 'error') {
                 await page.reload({ waitUntil: "domcontentloaded" });
                 await page.waitForTimeout(1000);
             }
+
+            if (isCanceled()) throw "Canceled"
 
             if (page.url() !== url) {
                 if (page.url() === twitterAccessPageUrl) {
@@ -257,6 +261,7 @@ const doTask = async (page, task, tags) => {
 
             // follow
             if (follow) {
+                if (isCanceled()) throw "Canceled"
                 actions.push('follow');
 
                 if (await page.click('[aria-label="Follow @' + task_username + '"]').catch((e) => { return 'error' }) === 'error') {
@@ -273,6 +278,7 @@ const doTask = async (page, task, tags) => {
             }
             // like
             if (like) {
+                if (isCanceled()) throw "Canceled"
                 actions.push('like');
 
                 if (await page.click('[aria-label="Like"]').catch((e) => { return 'error' }) === 'error') {
@@ -289,6 +295,7 @@ const doTask = async (page, task, tags) => {
             }
             // retweet
             if (retweet) {
+                if (isCanceled()) throw "Canceled"
                 actions.push('retweet')
 
                 if (await page.click('[aria-label="Retweet"]').catch((e) => { return 'error' }) === 'error') {
@@ -309,6 +316,7 @@ const doTask = async (page, task, tags) => {
             }
             // tag
             if (tag) {
+                if (isCanceled()) throw "Canceled"
                 actions.push('tag')
                 if (tags === '') {
                     fails.push('tag');

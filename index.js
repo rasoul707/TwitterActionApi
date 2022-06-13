@@ -79,7 +79,7 @@ app.post('/run', async (req, res) => {
 
                 try {
                     // do task
-                    const _result = await doTask(_pg, task, data.tags);
+                    const _result = await doTask(_pg, task, data.tags, () => isCanceled(trpID));
                     result.accountTasks[result.accountTasks.length - 1].ok = true;
                     result.accountTasks[result.accountTasks.length - 1].actions = _result.actions.join(",");
                     result.accountTasks[result.accountTasks.length - 1].fails = _result.fails.join(",");
