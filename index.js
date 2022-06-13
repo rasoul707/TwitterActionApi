@@ -9,7 +9,6 @@ const UserAgent = require('user-agents');
 const { newPage, lunchBrowser, login, doTask } = require('./helper');
 const fs = require('fs');
 const app = express();
-const { PuppeteerScreenRecorder } = require('puppeteer-screen-recorder');
 require("dotenv").config();
 
 
@@ -57,9 +56,9 @@ app.post('/run', async (req, res) => {
 
 
             /****/
-            const _v0 = trpID + '-' + account[0];
-            const recorder = new PuppeteerScreenRecorder(_pg);
-            await recorder.start("screens/" + _v0 + ".mp4");
+            // const _v0 = trpID + '-' + account[0];
+            // const recorder = new PuppeteerScreenRecorder(_pg);
+            // await recorder.start("screens/" + _v0 + ".mp4");
             /****/
 
             const stepLogin = await login(_pg, account);
@@ -94,7 +93,7 @@ app.post('/run', async (req, res) => {
 
 
             /****/
-            await recorder.stop();
+            // await recorder.stop();
             /****/
 
             await _pg.close();
